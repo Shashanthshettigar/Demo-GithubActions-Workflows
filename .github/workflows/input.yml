@@ -5,9 +5,12 @@ on:
     inputs:
       environment:
         description: "Which environment?"
-        required: true
-        default: "dev"
-
+        type: choice
+        options:
+          - dev
+          - staging 
+          - prod
+          - test
 jobs:
   demo:
     runs-on: ubuntu-latest
