@@ -1,0 +1,50 @@
+name: CI - Build and Push to ECR
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run tests
+        run: |
+          echo "Running application tests"
+          python --version
+
+      - name: Build Docker image
+        run: |
+          docker build -t payment-service .
+
+      - name: Generate image tag
+        id: tag
+        run: |
+          echo "tag=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::066288112657:role/Github-actions-demo-payment-service
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Tag Docker image
+        run: |
+          docker tag payment-service:latest \
+          066288112657.dkr.ecr.us-east-1.amazonaws.com/payment-service:${{ steps.tag.outputs.tag }}
+
+      - name: Push Docker image
+        run: |
+          docker push \
+          066288112657.dkr.ecr.us-east-1.amazonaws.com/payment-service:${{ steps.tag.outputs.tag }}
