@@ -42,9 +42,9 @@ jobs:
       - name: Tag Docker image
         run: |
           docker tag payment-service:latest \
-          066288112657.dkr.ecr.us-east-1.amazonaws.com/payment-service:${{ steps.tag.outputs.tag }}
+          066288112657.dkr.ecr.us-east-1.amazonaws.com/github-actions-repo:${{ steps.tag.outputs.tag }}
 
       - name: Push Docker image
         run: |
           docker push \
-          066288112657.dkr.ecr.us-east-1.amazonaws.com/payment-service:${{ steps.tag.outputs.tag }}
+          066288112657.dkr.ecr.us-east-1.amazonaws.com/github-actions-repo:${{ steps.tag.outputs.tag }}
