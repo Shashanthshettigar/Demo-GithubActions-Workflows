@@ -1,63 +1,76 @@
 name: CI - Build and Push to ECR
+
 on:
   push:
     branches:
       - main
+
 permissions:
   contents: read
   id-token: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+
     outputs:
       image_tag: ${{ steps.tag.outputs.tag }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+
       - name: Install dependencies
         run: |
           pip install -r requirement.txt
+
       - name: Run tests
         run: |
           echo "Running application tests"
           python -m pytest
+
       - name: Generate image tag
         id: tag
         run: |
           echo "tag=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Build Docker image
         run: |
           docker build \
             -t payment-service:${{ steps.tag.outputs.tag }} .
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::066288112657:role/Github-actions-demo-payment-service
           aws-region: us-east-1
+
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
+
       - name: Tag Docker image for ECR
-        run: >
+        run: |
           docker tag \
             payment-service:${{ steps.tag.outputs.tag }} \
             066288112657.dkr.ecr.us-east-1.amazonaws.com/github-actions-repo:${{ steps.tag.outputs.tag }}
+
       - name: Push Docker image
-        run: >
+        run: |
           docker push \
             066288112657.dkr.ecr.us-east-1.amazonaws.com/github-actions-repo:${{ steps.tag.outputs.tag }}
-      - name: Create image metadata
-        run: >
-          echo
-           "IMAGE_URI=066288112657.dkr.ecr.us-east-1.amazonaws.com/github-actions-repo:${{steps.tag.outputs.tag }}" > image-metadata.txt
 
+      - name: Create image metadata
+        run: |
+          echo "IMAGE_URI=066288112657.dkr.ecr.us-east-1.amazonaws.com/github-actions-repo:${{ steps.tag.outputs.tag }}" > image-metadata.txt
           echo "IMAGE_TAG=${{ steps.tag.outputs.tag }}" >> image-metadata.txt
+
       - name: Upload image metadata
         uses: actions/upload-artifact@v4
         with:
           name: image-metadata
           path: image-metadata.txt
-
