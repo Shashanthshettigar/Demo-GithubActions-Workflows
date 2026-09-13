@@ -1,4 +1,4 @@
-name: CI - Build and Push to ECR
+name: CI - old
 
 on:
   workflow_dispatch:
