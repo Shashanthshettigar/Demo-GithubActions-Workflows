@@ -52,8 +52,7 @@ jobs:
       - name: Create image metadata
         run: >
           echo
-           "IMAGE_URI=066288112657.dkr.ecr.us-east-1.amazonaws.com/github-actions-repo:${{
-            steps.tag.outputs.tag }}" > image-metadata.txt
+           "IMAGE_URI=066288112657.dkr.ecr.us-east-1.amazonaws.com/github-actions-repo:${{steps.tag.outputs.tag }}" > image-metadata.txt
 
           echo "IMAGE_TAG=${{ steps.tag.outputs.tag }}" >> image-metadata.txt
       - name: Upload image metadata
