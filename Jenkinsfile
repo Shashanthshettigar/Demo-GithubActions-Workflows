@@ -7,7 +7,9 @@ pipeline {
 
         stage('Checkout') {
             steps {
+                echo 'Running on DEV branch'
                 echo 'Checking out source code'
+                
             }
         }
 
