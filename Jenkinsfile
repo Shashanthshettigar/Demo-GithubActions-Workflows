@@ -1,44 +1,13 @@
-//Github-webhook test
-
 pipeline {
-    agent any
+    agent { label 'linux docker' }
 
     stages {
-
-        stage('Checkout') {
+        stage('Docker Environment') {
             steps {
-                echo 'Running on DEV branch'
-                echo 'Checking out source code'
-                
+                sh 'hostname'
+                sh 'docker --version'
+                sh 'docker info'
             }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running tests'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo 'Building payment service'
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully'
-        }
-
-        failure {
-            echo 'Pipeline failed'
-        }
-
-        always {
-            echo 'Pipeline execution completed'
         }
     }
 }
-
-
